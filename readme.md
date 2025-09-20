@@ -1,32 +1,52 @@
-How To Configure EC2
+# How To Configure EC2
 
+Follow these steps to configure and launch an EC2 instance in AWS:
 
-In the AWS console search for Ec2
-On the left hand side of the page, click on Security Groups
-Click on the Orange “Create security group” button
-Name your security group and add a description
-Under Inbound rules, click on the “Add rule” button
-Add the following rules
-Type = HTTP
-Port range = 0
-Source = “Anywhere-IPv4”
-Leave Outbound rules alone
-Optional - Add a tag
-Click on the orange “Create security group” button.  You should see a green banner notifying you that the instance was successfully created
-Navigate back to the EC2 home page and click on Instances on the left hand side
-Click on the orange “Launch instances” button
-Give your instance a name
-Leave Amazon Linux as the AMI
-Leave the instance type (it defaults to the free tier)
-Create a new key pair
-Leave RSA as the key pair type
-Leave .pem as the private key file format
-Click on the orange “Create key pair” button
-Under Network Settings click on “Select existing security group” and select the security group created in step 9
-Open the Advanced Details section
-Scroll until you see “User data”
-Paste in an EC2 start up script
-Click on “Launch instance” and navigate back to the Instances page
-Once the instance has been launched with the “Running” status and the health checks were successful, open the instance’s details
-Copy the Public DNS
-Open a new browser or tab and type http://<PublicDNS> 
+---
+
+## 1. Create a Security Group
+1. In the AWS Console, search for **EC2**.
+2. On the left-hand side, click **Security Groups**.
+3. Click **Create security group** (orange button).
+4. Give it a name and description.
+5. Under **Inbound rules**, click **Add rule**:
+   - **Type:** HTTP  
+   - **Port range:** 80  
+   - **Source:** Anywhere (0.0.0.0/0, ::/0)  
+6. Leave **Outbound rules** as default.  
+7. (Optional) Add tags.  
+8. Click **Create security group**.
+
+---
+
+## 2. Launch an Instance
+1. In the EC2 console, click **Instances** → **Launch instances**.
+2. Enter a name for your instance.
+3. Leave the AMI as **Amazon Linux** (default free tier).
+4. Leave the default instance type.
+5. Under **Key pair**:
+   - Create a new key pair.  
+   - Choose **RSA** as the key type.  
+   - Leave `.pem` as the file format.  
+   - Download the key pair file.  
+
+---
+
+## 3. Configure Networking
+1. Under **Network Settings**, select **Select existing security group**.
+2. Choose the security group you just created.
+
+---
+
+## 4. Add User Data (Optional)
+1. Expand **Advanced details**.
+2. Scroll to **User data**.
+3. Paste in your EC2 startup script.
+
+---
+
+## 5. Launch & Test
+1. Click **Launch instance**.
+2. Wait until the status is **Running** and health checks pass.
+3. Copy the **Public DNS** of your instance.
+4. Open a browser and visit:  
