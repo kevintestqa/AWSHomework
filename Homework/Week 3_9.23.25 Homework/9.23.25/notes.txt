@@ -1,0 +1,13 @@
+- PWD = print working directory
+- ls = shows items in current working directory
+- cd = change directory
+- mkdir = make directory 
+- touch = create file
+
+set up Repo via command line
+echo "# 9.23.25-class7" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/kevintestqa/9.23.25-class7.git
