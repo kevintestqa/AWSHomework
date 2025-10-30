@@ -12,6 +12,7 @@ Note: The default VPC is not included.
 
 ```
 1) Must have AWS CLI Configured
+2) VS Code should be installed
 
 ```
 
@@ -100,6 +101,48 @@ touch 4-nat.tf
 touch 5.routetable.tf
 ```
 
+Step 5 - Launch VS Code
+```
+1) use the command code . to launch VS Code
+```
+
+Step 6 - Set Up Terraform Project
+```
+1) Use Aaron's command to check AWS credentials and terraform version:
+ curl https://raw.githubusercontent.com/aaron-dm-mcdonald/Class7-notes/refs/heads/main/101825/check.sh | bash
+ 
+ 
+2) In your 0-auth file type:
+
+terraform {
+  required_providers {
+    aws = {
+        source = "hashicorp/aws"
+        version = "~> 6.18.0"
+    }
+  }
+}
+
+provider "aws" {
+    region = "us-east-1"
+}
+
+Feel free to replace the region's value with the region you want to work in'
+
+```
+
+Step 7 - Working In Your Terraform Project
+```
+1) After setting your inital environment, follow the I(V)PAD principle
+1a) In VS Code's terminal, type "terraform init"'
+1b) You should see  terraform.lock.hcl and .terraform items in your file explorer
+
+2) Type "terraform Validate".  This will ensure your syntax is correct and catch errors.
+3) Type "terraform plan".  This will display the details of your changes
+4) Once you are satisfied with the change, type "Terraform apply".  This will push your changes to AWS once you approve the change
+
+
+```
 
 ## Argument Reference
 
