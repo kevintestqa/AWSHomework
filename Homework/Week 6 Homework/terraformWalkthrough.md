@@ -2,13 +2,9 @@
 
 # Terraform Walkthrough
 
-Lists VPC resources.
-
-Note: The default VPC is not included.
 
 ## Prerequistes
 
-### Prerequiste
 
 ```
 1) Must have AWS CLI Configured
@@ -24,7 +20,6 @@ Step 1 - AWS credentials check
 ```
 
 Step 2 - Create directory 
-
 ```
 1) Using terminal or gitbash, use the mkdir command and cd into it
 ```
@@ -127,7 +122,7 @@ provider "aws" {
     region = "us-east-1"
 }
 
-Feel free to replace the region's value with the region you want to work in'
+Feel free to replace the region's value with the region you want to work in
 
 ```
 
@@ -140,29 +135,14 @@ Step 7 - Working In Your Terraform Project
 2) Type "terraform Validate".  This will ensure your syntax is correct and catch errors.
 3) Type "terraform plan".  This will display the details of your changes
 4) Once you are satisfied with the change, type "Terraform apply".  This will push your changes to AWS once you approve the change
-
-
+5) Sign into the AWS console using the same account the CLI is using.  This will allow you to check if your cloud environment was successfully deployed
+6) Type "terraform destroy" to tear down your cloud environment
 ```
 
-## Argument Reference
+##  Reference
 
-This list resource supports the following arguments:
+Use the terraform registry for assistance in building resources:
 
-* `filter` - (Optional) One or more filters to apply to the search.
-  If multiple `filter` blocks are provided, they all must be true.
-  For a full reference of filter names, see [describe-vpcs in the AWS CLI reference][describe-vpcs].
-  See [`filter` Block](#filter-block) below.
-* `region` - (Optional) [Region](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints) to query.
-  Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).
-* `vpc_ids` - (Optional) List of VPC IDs to query.
+* 
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference
 
-### `filter` Block
-
-The `filter` block supports the following arguments:
-
-* `name` - (Required) Name of the filter.
-  For a full reference of filter names, see [describe-vpcs in the AWS CLI reference][describe-vpcs].
-  `is-default` is not supported.
-* `values` - (Required) One or more values to match.
-
-[describe-vpcs]: http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
