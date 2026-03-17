@@ -1,0 +1,171 @@
+Jenkins EC2 User Data Script (new instance, Java 21)
+
+Jenkins URL after boot:
+http://<EC2-PUBLIC-IP>:8080
+
+Initial admin password:
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+User data script:
+
+#!/bin/bash
+set -euxo pipefail
+
+exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
+
+# --------------------------------------
+# Update packages
+# --------------------------------------
+sudo yum update -y
+
+# --------------------------------------
+# Add the Jenkins repository to yum sources
+# --------------------------------------
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+# --------------------------------------
+# Import the Jenkins GPG key to verify packages
+# --------------------------------------
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+
+# --------------------------------------
+# Install required utilities
+# --------------------------------------
+sudo yum install -y
+
+# --------------------------------------
+# Install Java 21 (Amazon Corretto)
+# --------------------------------------
+sudo yum install -y java-21-amazon-corretto
+java -version
+
+# --------------------------------------
+# Install Jenkins
+# --------------------------------------
+sudo yum install jenkins -y
+
+# --------------------------------------
+# Enable Jenkins to start at boot
+# --------------------------------------
+sudo systemctl enable jenkins
+
+# --------------------------------------
+# Start the Jenkins service
+# --------------------------------------
+sudo systemctl start jenkins
+
+# --------------------------------------
+# Install Terraform
+# --------------------------------------
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+sudo yum install -y terraform
+terraform version
+
+
+# --------------------------------------
+# Install requested Jenkins plugins
+# Note: plugin display names in the UI do not always match CLI IDs exactly.
+# These IDs are the ones to validate first.
+# --------------------------------------
+sudo jenkins-plugin-cli --plugins \
+  aws-credentials \
+  pipeline-aws \
+  ec2 \
+  amazon-ecs \
+  codedeploy \
+  aws-lambda \
+  aws-codebuild \
+  aws-bucket-credentials \
+  aws-secrets-manager-secret-source \
+  aws-codepipeline \
+  configuration-as-code \
+  jenkins-cloudformation-plugin \
+  aws-sam \
+  terraform \
+  kubernetes \
+  google-storage-plugin \
+  google-kubernetes-engine \
+  gcp-java-sdk-auth \
+  pipeline-gcp \
+  snyk-security-scanner \
+  sonar \
+  aqua-security-scanner \
+  aqua-microscanner \
+  aqua-serverless \
+  github \
+  github-oauth \
+  pipeline-github \
+  pipeline-githubnotify-step \
+  maven-plugin \
+  pipeline-maven \
+  publish-over-ssh
+
+# --------------------------------------
+# Restart Jenkins after plugin installation
+# --------------------------------------
+sudo systemctl restart jenkins
+sudo systemctl status jenkins --no-pager
+
+# --------------------------------------
+# Useful verification commands after login
+# --------------------------------------
+# java -version
+# sudo systemctl status jenkins
+# sudo cat /var/log/user-data.log
+# sudo cat /var/log/cloud-init-output.log
+# sudo ls /var/lib/jenkins/plugins
+
+# --------------------------------------
+# Optional: Check the status of Jenkins (won’t display in EC2 user data logs but useful for debugging)
+# --------------------------------------
+sudo systemctl status jenkins
+# Q to quit lol
+
+Plugin ID reference list
+
+aws-credentials                # AWS Credentials
+pipeline-aws                   # Pipeline: AWS Steps
+ec2                            # Amazon EC2
+amazon-ecs                     # Amazon Elastic Container Service (ECS) / Fargate
+codedeploy                     # AWS CodeDeploy
+aws-lambda                     # AWS Lambda
+aws-codebuild                  # AWS CodeBuild
+aws-bucket-credentials         # Amazon S3 Bucket Credentials
+aws-secrets-manager-secret-source # AWS Secrets Manager SecretSource
+aws-codepipeline               # AWS CodePipeline
+configuration-as-code          # Base JCasC plugin; verify if you also need a separate AWS SSM secrets plugin
+jenkins-cloudformation-plugin  # CloudFormation
+aws-sam                        # AWS SAM
+terraform                      # Terraform plugin in Jenkins
+kubernetes                     # Kubernetes
+google-storage-plugin          # Google Cloud Storage
+google-kubernetes-engine       # Google Kubernetes Engine
+gcp-java-sdk-auth              # Google Cloud Platform SDK::Auth
+pipeline-gcp                   # Pipeline: GCP Steps
+snyk-security-scanner          # Snyk Security
+sonar                          # SonarQube Scanner
+aqua-security-scanner          # Aqua Security Scanner
+aqua-microscanner             # Aqua MicroScanner
+aqua-serverless               # Aqua Security Serverless Scanner
+github                         # GitHub Integration
+github-oauth                   # GitHub Authentication
+pipeline-github                # Pipeline: GitHub
+pipeline-githubnotify-step     # Pipeline GitHub Notify Step
+maven-plugin                   # Maven Integration
+pipeline-maven                 # Pipeline Maven Integration
+publish-over-ssh               # Publish Over SSH
+
+Important notes
+
+1. Java 21 is explicitly installed in this script with:
+   sudo yum install -y java-21-amazon-corretto
+
+2. This script is intended for a brand new Jenkins EC2 instance, not for patching an existing controller.
+
+3. Some plugin marketing names do not exactly match Jenkins CLI IDs. If the build fails on one plugin, check:
+   /var/log/user-data.log
+   /var/log/cloud-init-output.log
+
+4. The line "Configuration as Code AWS SSM secrets" may require an additional or different plugin than plain "configuration-as-code". Validate that one in the Jenkins plugin catalog after first boot.
